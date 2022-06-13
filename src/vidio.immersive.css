@@ -1,0 +1,23 @@
+.vjs-immersive-mode-button {
+  margin-left: 24px!important;
+}
+
+.immersive-body {
+  overflow: hidden;
+}
+
+.immersive-mode {
+  display: block!important;
+  width: 100%!important;
+  height: 100%!important;
+  background-color: #000!important;
+  position: fixed!important;
+  z-index: 999999!important;
+  left: 0!important;
+  top: 0!important;
+}
+
+.immersive-mode .video-only {
+  top: 50%;
+  transform: translateY(-50%);
+}
