@@ -21,3 +21,7 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
+.livestreaming-player {
+  background-image: none!important;
+}
