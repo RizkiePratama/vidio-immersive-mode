@@ -15,7 +15,7 @@
     chrome.storage.sync.get(null, loadBrowserSettings);
   } else {
     // Do Firefox Stuff
-    browser.storage.synce.get().then(loadBrowserSettings);
+    browser.storage.sync.get().then(loadBrowserSettings);
   }
 
   function loadBrowserSettings(items) {
