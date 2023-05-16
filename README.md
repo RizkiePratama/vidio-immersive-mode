@@ -10,3 +10,11 @@ This Plugin Works on both Firefox and Google Chrome Browsers.
 - Install The Plugin from Firefox Add-ons Store or Chrome Web Store (TBA)
 - Open Desired watch Page on Vidio.com
 - Click *"Immersive Mode Button"* inside the player
+
+#### Packaging Guide
+- You can use Helper Script to zip package it for chrome and firefox using each own manifest:<br />
+    `$ ./bin/package.sh <platform>`
+
+##### Supported platform options:
+- chrome
+- firefox
