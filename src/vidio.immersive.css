@@ -22,6 +22,11 @@
   transform: translateY(-50%);
 }
 
+.immersive-mode .video-js {
+  padding-top: 0!important;
+  height: 100vh!important;
+}
+
 .livestreaming-player {
   background-image: none!important;
 }
