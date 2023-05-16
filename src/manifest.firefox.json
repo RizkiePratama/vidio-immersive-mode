@@ -1,0 +1,28 @@
+{
+ "manifest_version": 2,
+ "name": "Vidio Immersive Mode",
+ "version": "1.0.2",
+ "description": "Browser extension for Vidio.com, watch Live and VOD content in windowed fullscreen mode",
+ "short_name": "vidio immersive",
+ "permissions": ["storage"],
+ "browser_specific_settings": {
+    "gecko": {
+      "id": "{4862a698-8ad1-4ece-9316-63377147ae4c}"
+    }
+  },
+ "content_scripts": [
+   {
+     "matches": ["*://*.vidio.com/*"],
+     "css": ["vidio.immersive.css"],
+     "js": ["vidio.immersive.js"],
+     "run_at": "document_end"
+   }
+ ],
+  "option_ui": {
+    "page": "options.html",
+    "browser_style": true
+  },
+  "background": {
+    "scripts": ["vidio.immersive.service.js"]
+  }
+}
