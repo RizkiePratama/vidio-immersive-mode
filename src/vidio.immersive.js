@@ -1,13 +1,14 @@
 (function () {
   var isImmersive = false;
-  var vjsContainer = null;
-  var vjsControlBar = null;
+  var playerContainer = null;
+  var playerControlBar = null;
   var newBtn = null;
   var vidioBody = null;
-  var chatBoxContainer = null;
   var browser = browser || false;
   var isFirefox = browser ? true : false;
   var isLive = false;
+  var isShakaPlayer = false;
+  var controlsCreated = false;
 
   // Load Browser SEttings
   if (!isFirefox) {
@@ -29,42 +30,109 @@
     });
   }
 
-
   function initVidioImmersiveMode() {
     isLive = window.location.pathname.split('/')[1] == 'live' ? true : false;
 
+    // Try to detect Video.js player
     if (isLive) {
-      chatBoxContainer = document.querySelector('.livestreaming-discussion');
-      vjsContainer = document.querySelector(".livestreaming__player-container")
+      playerContainer = document.querySelector(".player-component-wrapper");
     } else {
-      vjsContainer = document.querySelector("#article-player")
+      playerContainer = document.querySelector("#article-player");
     }
 
-    vjsControlBar = document.querySelector(".vjs-control-bar");
-    vidioBody = document.querySelector("body");
+    playerControlBar = document.querySelector(".vjs-control-bar");
 
+    // If Video.js player not found, try to detect Shaka Player
+    if (!playerContainer || !playerControlBar) {
+      playerContainer = document.querySelector(".shaka-player-container");
+      if (playerContainer) {
+        isShakaPlayer = true;
+        console.log("Vidio Immersive Mode: Shaka Player container detected. Waiting for controls...");
+        waitForShakaControls();
+        return; // Exit for now, controls will be created once found
+      }
+    }
+
+    // If no player container or control bar is found, exit
+    if (!playerContainer || !playerControlBar) {
+      console.log("Vidio Immersive Mode: No compatible player found.");
+      return;
+    } else if (!isShakaPlayer) {
+      console.log("Vidio Immersive Mode: Video.js player detected.");
+    }
+
+    vidioBody = document.querySelector("body");
     createControls();
   }
 
+  function waitForShakaControls() {
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          playerControlBar = playerContainer.querySelector('[data-testid="controller-panel"]');
+          if (playerControlBar && !controlsCreated) {
+            console.log("Vidio Immersive Mode: Shaka Player controls found.");
+            observer.disconnect();
+            vidioBody = document.querySelector("body");
+            createControls();
+            controlsCreated = true;
+          }
+        }
+      });
+    });
+
+    observer.observe(playerContainer, { childList: true, subtree: true });
+
+    setTimeout(function() {
+      if (!playerControlBar) {
+        console.log("Vidio Immersive Mode: Shaka Player controls not found after timeout.");
+      }
+    }, 300000); // Timeout Waiting Player to Start after 5 Minutes
+  }
+
   function createControls() {
-    var nodes = vjsControlBar.childNodes;
-    var fscPos = clPos = nodes.length;
+    var nodes = playerControlBar.childNodes;
+    var fscBtn = null;
+    var clPos = nodes.length;
 
-    if (isLive) {
-      fscPos -= 2;
-      clPos -= 2;
+    if (isShakaPlayer) {
+      fscBtn = playerControlBar.querySelector('[data-testid="fullscreen-button"]');
+      if (fscBtn) {
+        newBtn = fscBtn.cloneNode(true);
+        newBtn.title = 'Immersive Mode';
+        newBtn.className = 'shaka-immersive-mode-button p8siU1dZviglbdDe3TAQ'; // Keep original Shaka button class
+        newBtn.setAttribute('data-testid', 'immersive-mode-button');
+        newBtn.addEventListener('click', toggleImmersive);
+        fscBtn.before(newBtn);
+      } else {
+        // Fallback if no fullscreen button found, append to control bar
+        newBtn = document.createElement('button');
+        newBtn.title = 'Immersive Mode';
+        newBtn.className = 'shaka-immersive-mode-button p8siU1dZviglbdDe3TAQ'; // Use Shaka's button class
+        newBtn.setAttribute('data-testid', 'immersive-mode-button');
+        newBtn.addEventListener('click', toggleImmersive);
+        playerControlBar.appendChild(newBtn);
+      }
     } else {
-      fscPos -= 3;
-      clPos -= 4;
-    }
+      // Existing Video.js logic
+      var fscPos = clPos;
 
-    var fscBtn = nodes[fscPos];
-    newBtn = nodes[clPos].cloneNode(true);
-    newBtn.title = 'Immersive Mode';
-    newBtn.className = 'vjs-immersive-mode-button vjs-control vjs-button'
+      if (isLive) {
+        fscPos -= 2;
+        clPos -= 2;
+      } else {
+        fscPos -= 3;
+        clPos -= 4;
+      }
+
+      fscBtn = nodes[fscPos];
+      newBtn = nodes[clPos].cloneNode(true);
+      newBtn.title = 'Immersive Mode';
+      newBtn.className = 'vjs-immersive-mode-button vjs-control vjs-button'
+      newBtn.addEventListener('click', toggleImmersive);
+      fscBtn.before(newBtn);
+    }
     updateBtnIcon();
-    newBtn.addEventListener('click', toggleImmersive);
-    fscBtn.before(newBtn);
   }
 
   function toggleImmersive() {
@@ -86,13 +154,13 @@
   }
 
   function startImmersiveMode() {
-    vjsContainer.classList.toggle("immersive-mode");
+    playerContainer.classList.toggle("immersive-mode");
     vidioBody.classList.toggle("immersive-body")
     isImmersive = true;
   }
 
   function exitImmersiveMode() {
-    vjsContainer.classList.toggle("immersive-mode");
+    playerContainer.classList.toggle("immersive-mode");
     vidioBody.classList.toggle("immersive-body")
     isImmersive = false;
   }

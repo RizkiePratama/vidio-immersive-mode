@@ -1,7 +1,7 @@
 {
  "manifest_version": 2,
  "name": "Vidio Immersive Mode",
- "version": "1.0.2",
+ "version": "1.0.3",
  "description": "Browser extension for Vidio.com, watch Live and VOD content in windowed fullscreen mode",
  "short_name": "vidio immersive",
  "permissions": ["storage"],

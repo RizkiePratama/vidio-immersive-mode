@@ -1,5 +1,11 @@
 .vjs-immersive-mode-button {
-  margin-left: 24px!important;
+  margin-right: 24px!important;
+}
+
+.shaka-immersive-mode-button button.material-icons {
+  font-size: 24px; /* Adjust as needed */
+  line-height: 1;
+  color: white; /* Adjust as needed */
 }
 
 .immersive-body {
@@ -22,7 +28,8 @@
   transform: translateY(-50%);
 }
 
-.immersive-mode .video-js {
+.immersive-mode .video-js,
+.immersive-mode .shaka-player-container {
   padding-top: 0!important;
   height: 100vh!important;
 }
